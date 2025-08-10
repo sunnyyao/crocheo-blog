@@ -2,9 +2,11 @@
 title: "The Mathematics Behind Perfect Crochet Spheres"
 description: "How geometry, stitch counts, and simple formulas create perfectly round crochet spheres."
 pubDate: 2025-08-10
-image: "/images/og/crochet-spheres.jpg"
+image: "/images/crochet-spheres.jpg"
 tags: ["crochet", "math", "algorithms"]
 ---
+
+![Perfect Crochet Sphere](/images/crochet-sphere.jpg)
 
 ## Introduction
 
@@ -127,3 +129,5 @@ Wrap-Up
 Perfect crochet spheres aren’t luck—they’re controlled increases that match a growing circumference, then a mirror decrease to close. Once you know your gauge, you can generate stitch counts for any size ball, every time.
 
 Next up: extending this math to ellipsoids and stylized amigurumi heads (different growth rates on different axes).
+
+Written by Crocheo — combining crochet artistry with coding precision.

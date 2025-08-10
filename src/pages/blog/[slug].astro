@@ -1,55 +1,65 @@
 ---
-// src/pages/blog/[slug].astro
-import { getCollection } from 'astro:content';
-import SEO from '../../components/SEO.astro';
-
-export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: { post },
-  }));
-}
-
-const { post } = Astro.props;
-const { Content } = await post.render();
+/**
+ * Smarter SEO component:
+ * - If you pass `post` (from astro:content), it auto-reads post.data.image/title/description.
+ * - Otherwise you can still pass props manually: title, description, url, image.
+ * - Falls back to /images/og-default.jpg
+ *
+ * Usage in [slug].astro:
+ *   <SEO post={post} />
+ *
+ * Usage on generic pages (no post):
+ *   <SEO title="Crocheo – Crochet & Code" description="..." image="/images/og/og-home.jpg" />
+ */
 
 const {
+  // Optional manual props
   title,
   description,
-  pubDate,
-  image = '/images/og-default.jpg',
-  tags = [],
-} = post.data;
+  url,
+  image,
+  noindex = false,
 
-const canonicalUrl = `https://crocheo.net/blog/${post.slug}`;
-const formattedDate = new Date(pubDate).toLocaleDateString('en-US', {
-  year: 'numeric', month: 'short', day: '2-digit',
-});
+  // Auto mode: pass one of these and we'll read frontmatter
+  post,          // Content collections entry (preferred)
+  frontmatter,   // Fallback if you already have frontmatter handy
+} = Astro.props;
+
+// Try to read from a post (content collections), then frontmatter, then manual props
+const fm = post?.data ?? frontmatter ?? {};
+const resolvedTitle = title ?? fm.title ?? 'Crocheo – Crochet & Code';
+const resolvedDesc  = description ?? fm.description ?? 'Where crochet artistry meets developer precision.';
+const resolvedImg   = image ?? fm.image ?? '/images/og-default.jpg';
+
+// Build absolute URLs based on current request origin
+const origin = Astro.request.url.origin;
+const canonical = url ?? new URL(Astro.url.pathname, origin).toString();
+const absoluteImage = resolvedImg.startsWith('http')
+  ? resolvedImg
+  : new URL(resolvedImg, origin).toString();
 ---
 
-<html lang="en">
-  <head>
-    <SEO
-      title={`${title} – Crocheo`}
-      description={description}
-      url={canonicalUrl}
-      image={image}
-    />
-  </head>
-  <body style="font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.65;">
-    <a href="/blog" style="text-decoration:none;">← All Posts</a>
+<title>{resolvedTitle}</title>
+<meta name="description" content={resolvedDesc} />
 
-    <header style="margin-top:1rem; margin-bottom:1rem;">
-      <h1 style="margin:0 0 .25rem 0;">{title}</h1>
-      <div style="color:#666;">
-        <time datetime={new Date(pubDate).toISOString()}>{formattedDate}</time>
-        {tags.length ? <span> · {tags.join(', ')}</span> : null}
-      </div>
-    </header>
+{canonical && <link rel="canonical" href={canonical} />}
 
-    <main>
-      <Content />
-    </main>
-  </body>
-</html>
+<!-- Robots -->
+{noindex
+  ? <meta name="robots" content="noindex, nofollow" />
+  : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+}
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:title" content={resolvedTitle} />
+<meta property="og:description" content={resolvedDesc} />
+<meta property="og:image" content={absoluteImage} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+{canonical && <meta name="twitter:url" content={canonical} />}
+<meta name="twitter:title" content={resolvedTitle} />
+<meta name="twitter:description" content={resolvedDesc} />
+<meta name="twitter:image" content={absoluteImage} />
