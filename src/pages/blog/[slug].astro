@@ -1,28 +1,55 @@
 ---
+// src/pages/blog/[slug].astro
 import { getCollection } from 'astro:content';
+import SEO from '../../components/SEO.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map((entry) => ({
-    params: { slug: entry.slug },
-    props: { entry },
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
   }));
 }
 
-const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const {
+  title,
+  description,
+  pubDate,
+  image = '/images/og-default.jpg',
+  tags = [],
+} = post.data;
+
+const canonicalUrl = `https://crocheo.net/blog/${post.slug}`;
+const formattedDate = new Date(pubDate).toLocaleDateString('en-US', {
+  year: 'numeric', month: 'short', day: '2-digit',
+});
 ---
 
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>{entry.data.title}</title>
-    <meta name="description" content={entry.data.description} />
+    <SEO
+      title={`${title} – Crocheo`}
+      description={description}
+      url={canonicalUrl}
+      image={image}
+    />
   </head>
-  <body style="font-family: system-ui; max-width: 720px; margin: 2rem auto; line-height:1.6;">
-    <a href="/blog">← Back to Blog</a>
-    <h1>{entry.data.title}</h1>
-    <div style="color:#666; margin-bottom:1rem;">{entry.data.pubDate.toDateString()}</div>
-    <Content />
+  <body style="font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.65;">
+    <a href="/blog" style="text-decoration:none;">← All Posts</a>
+
+    <header style="margin-top:1rem; margin-bottom:1rem;">
+      <h1 style="margin:0 0 .25rem 0;">{title}</h1>
+      <div style="color:#666;">
+        <time datetime={new Date(pubDate).toISOString()}>{formattedDate}</time>
+        {tags.length ? <span> · {tags.join(', ')}</span> : null}
+      </div>
+    </header>
+
+    <main>
+      <Content />
+    </main>
   </body>
 </html>

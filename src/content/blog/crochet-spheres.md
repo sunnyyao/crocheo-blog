@@ -2,6 +2,7 @@
 title: "The Mathematics Behind Perfect Crochet Spheres"
 description: "How geometry, stitch counts, and simple formulas create perfectly round crochet spheres."
 pubDate: 2025-08-10
+image: "/images/og/crochet-spheres.jpg"
 tags: ["crochet", "math", "algorithms"]
 ---
 

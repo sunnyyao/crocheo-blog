@@ -1,11 +1,48 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import SEO from '../components/SEO.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const posts = await getCollection('blog');
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html lang="en">
+  <head>
+    <SEO
+      title="Crocheo – Crochet & Code Blog"
+      description="A blog for developers who love crochet, algorithms, and accessible design tools."
+      url="https://crocheo.net"
+      image="/images/og/og-home.jpg"
+    />
+  </head>
+  <body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.65;">
+    <header style="margin-bottom: 2rem;">
+      <h1 style="margin:0;">Crocheo Blog</h1>
+      <p style="color:#666; margin-top:.25rem;">
+        Exploring the intersection of crochet artistry, mathematics, and code.
+      </p>
+    </header>
+
+    <main>
+      {posts
+        .sort((a, b) => new Date(b.data.pubDate) - new Date(a.data.pubDate))
+        .map(({ slug, data }) => (
+          <article style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom:.25rem;">
+              <a href={`/blog/${slug}`} style="text-decoration:none; color:#0366d6;">
+                {data.title}
+              </a>
+            </h2>
+            <time
+              datetime={new Date(data.pubDate).toISOString()}
+              style="color:#888; font-size:0.875rem;"
+            >
+              {new Date(data.pubDate).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: '2-digit'
+              })}
+            </time>
+            <p style="margin-top:.5rem;">{data.description}</p>
+          </article>
+        ))}
+    </main>
+  </body>
+</html>

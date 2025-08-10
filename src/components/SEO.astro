@@ -1,0 +1,51 @@
+---
+/**
+ * SEO.astro
+ * Usage:
+ * <SEO
+ *   title="Crocheo – Crochet & Code"
+ *   description="Where crochet artistry meets developer precision."
+ *   url="https://crocheo.net/blog/crochet-spheres"
+ *   image="/images/og-default.jpg"
+ *   noindex={false}
+ * />
+ */
+
+const {
+  title = 'Crocheo – Crochet & Code',
+  description = 'Where crochet artistry meets developer precision.',
+  url = 'https://crocheo.net',
+  image = '/images/og-default.jpg',
+  noindex = false,
+} = Astro.props;
+
+// Ensure absolute image URL for social cards
+const absoluteImage = image.startsWith('http')
+  ? image
+  : new URL(image, 'https://crocheo.net').toString();
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+
+{url && <link rel="canonical" href={url} />}
+
+<!-- Robots -->
+{noindex
+  ? <meta name="robots" content="noindex, nofollow" />
+  : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+}
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+{url && <meta property="og:url" content={url} />}
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={absoluteImage} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+{url && <meta name="twitter:url" content={url} />}
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={absoluteImage} />
