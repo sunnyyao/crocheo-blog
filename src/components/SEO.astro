@@ -1,51 +1,85 @@
 ---
 /**
- * SEO.astro
- * Usage:
- * <SEO
- *   title="Crocheo – Crochet & Code"
- *   description="Where crochet artistry meets developer precision."
- *   url="https://crocheo.net/blog/crochet-spheres"
- *   image="/images/og-default.jpg"
- *   noindex={false}
- * />
+ * SEO.astro (stable / build-safe)
+ *
+ * Usage on post pages:
+ *   <SEO post={post} />
+ *
+ * Usage on generic pages:
+ *   <SEO title="Crocheo – Crochet & Code" description="..." image="/images/og/og-home.jpg" />
+ *
+ * NOTE: Set `site` in astro.config.mjs for correct absolute URLs:
+ *   export default defineConfig({ site: 'https://crocheo.net' })
  */
 
 const {
-  title = 'Crocheo – Crochet & Code',
-  description = 'Where crochet artistry meets developer precision.',
-  url = 'https://crocheo.net',
-  image = '/images/og-default.jpg',
+  // Manual props (optional)
+  title,
+  description,
+  url,
+  image,
   noindex = false,
+  twitterHandle, // e.g. '@crocheo' (optional)
+
+  // Auto mode (preferred on post pages)
+  post,          // content-collections entry from astro:content
+  frontmatter,   // optional: pass explicit fm
 } = Astro.props;
 
-// Ensure absolute image URL for social cards
-const absoluteImage = image.startsWith('http')
-  ? image
-  : new URL(image, 'https://crocheo.net').toString();
+// Resolve frontmatter from post/frontmatter/props
+const fm = post?.data ?? frontmatter ?? {};
+const resolvedTitle = title ?? fm.title ?? 'Crocheo – Crochet & Code';
+const resolvedDesc  = description ?? fm.description ?? 'Where crochet artistry meets developer precision.';
+const resolvedImg   = image ?? fm.image ?? '/images/og-default.jpg';
+const ogType        = post ? 'article' : 'website';
+
+// Prefer Astro.site for static builds; fallback to your production domain
+const siteUrl = Astro.site ?? new URL('https://crocheo.net');
+
+// Canonical: explicit `url` prop or derive from current path
+const canonical = url ?? new URL(Astro.url.pathname, siteUrl).toString();
+
+// Absolute image URL (handles relative paths)
+const absoluteImage = resolvedImg.startsWith?.('http')
+  ? resolvedImg
+  : new URL(resolvedImg, siteUrl).toString();
+
+// Optional extras
+const imageAlt = `${resolvedTitle} — Crocheo`;
+const publishedISO = fm.pubDate ? new Date(fm.pubDate).toISOString() : undefined;
+
+// If you want to auto-noindex previews, uncomment below and adjust:
+// const isPreview = new URL(canonical).hostname.endsWith('.vercel.app');
+// const robotsNoindex = noindex || isPreview;
+const robotsNoindex = noindex;
 ---
 
-<title>{title}</title>
-<meta name="description" content={description} />
-
-{url && <link rel="canonical" href={url} />}
+<title>{resolvedTitle}</title>
+<meta name="description" content={resolvedDesc} />
+<link rel="canonical" href={canonical} />
 
 <!-- Robots -->
-{noindex
+{robotsNoindex
   ? <meta name="robots" content="noindex, nofollow" />
   : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 }
 
 <!-- Open Graph -->
-<meta property="og:type" content="website" />
-{url && <meta property="og:url" content={url} />}
-<meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={resolvedTitle} />
+<meta property="og:description" content={resolvedDesc} />
 <meta property="og:image" content={absoluteImage} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+{post && publishedISO && <meta property="article:published_time" content={publishedISO} />}
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
-{url && <meta name="twitter:url" content={url} />}
-<meta name="twitter:title" content={title} />
-<meta name="twitter:description" content={description} />
+<meta name="twitter:url" content={canonical} />
+<meta name="twitter:title" content={resolvedTitle} />
+<meta name="twitter:description" content={resolvedDesc} />
 <meta name="twitter:image" content={absoluteImage} />
+{twitterHandle && <meta name="twitter:site" content={twitterHandle} />}
+{twitterHandle && <meta name="twitter:creator" content={twitterHandle} />}

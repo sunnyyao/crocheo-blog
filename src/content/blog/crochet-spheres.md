@@ -3,10 +3,9 @@ title: "The Mathematics Behind Perfect Crochet Spheres"
 description: "How geometry, stitch counts, and simple formulas create perfectly round crochet spheres."
 pubDate: 2025-08-10
 image: "/images/crochet-spheres.jpg"
-tags: ["crochet", "math", "algorithms"]
+tags: ["crochet", "math", "algorithms","design"]
 ---
 
-![Perfect Crochet Sphere](/images/crochet-sphere.jpg)
 
 ## Introduction
 
@@ -100,34 +99,42 @@ Use the output as your per-round stitch counts. If you want a belt (constant cir
 
 ## 6) Example Pattern (Small Sphere, sc)
 
-Gauge (example): ~4 sts/cm in the round
+**Gauge (example):** ~4 sts/cm in the round  
 
-Target: ~6–7 cm diameter (adjust as needed)
-R1: MR, 6 sc                                   [6]
-R2: inc in each                                [12]
-R3: (sc 1, inc) × 6                            [18]
-R4: (sc 2, inc) × 6                            [24]
-R5: (sc 3, inc) × 6                            [30]
-R6: (sc 4, inc) × 6                            [36]
-R7: (sc 5, inc) × 6                            [42]
-R8: (sc 6, inc) × 6                            [48]
+**Target:** ~6–7 cm diameter (adjust as needed)
 
-(Optional belt) R9–R10: sc around              [48]
+```plaintext
+R1: MR, 6 sc                  [6]
+R2: inc in each               [12]
+R3: (sc 1, inc) × 6           [18]
+R4: (sc 2, inc) × 6           [24]
+R5: (sc 3, inc) × 6           [30]
+R6: (sc 4, inc) × 6           [36]
+R7: (sc 5, inc) × 6           [42]
+R8: (sc 6, inc) × 6           [48]
 
-R11: (sc 6, dec) × 6                           [42]
-R12: (sc 5, dec) × 6                           [36]
-R13: (sc 4, dec) × 6                           [30]
-R14: (sc 3, dec) × 6                           [24]
-R15: (sc 2, dec) × 6                           [18]
-R16: (sc 1, dec) × 6                           [12]
-R17: dec in each                               [6]
+(Optional belt)
+R9–R10: sc around             [48]
+
+R11: (sc 6, dec) × 6          [42]
+R12: (sc 5, dec) × 6          [36]
+R13: (sc 4, dec) × 6          [30]
+R14: (sc 3, dec) × 6          [24]
+R15: (sc 2, dec) × 6          [18]
+R16: (sc 1, dec) × 6          [12]
+R17: dec in each              [6]
+
 Fasten off, weave ends.
+```
 
-If you see ruffling before the equator, skip one increase round. If it cups inward, add one.
 
-Wrap-Up
+
+---
+
+## Wrap-Up
+
 Perfect crochet spheres aren’t luck—they’re controlled increases that match a growing circumference, then a mirror decrease to close. Once you know your gauge, you can generate stitch counts for any size ball, every time.
 
-Next up: extending this math to ellipsoids and stylized amigurumi heads (different growth rates on different axes).
+**Next up:** extending this math to ellipsoids and stylized amigurumi heads (different growth rates on different axes).
 
-Written by Crocheo — combining crochet artistry with coding precision.
+*Written by Crocheo — combining crochet artistry with coding precision.*
