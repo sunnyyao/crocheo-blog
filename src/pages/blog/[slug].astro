@@ -1,10 +1,11 @@
 ---
-// src/pages/blog/[slug].astro
-import { getCollection } from 'astro:content';
-import SEO from '../../components/SEO.astro';
+import Layout from "../../layouts/Layout.astro"; 
+import { getCollection } from "astro:content";
+import SEO from "../../components/SEO.astro";
+import { SITE } from "../../content/config.ts"; // optional DRY base URL
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection("blog");
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
@@ -16,44 +17,46 @@ const { Content } = await post.render();
 
 const {
   title,
-  description,
+  description = "A new post on Crocheo Blog",
   pubDate,
-  image = '/images/og-default.jpg',
+  image = "/images/og-default.jpg",
   tags = [],
 } = post.data;
 
-const canonicalUrl = `https://crocheo.net/blog/${post.slug}`;
-const formattedDate = new Date(pubDate).toLocaleDateString('en-US', {
-  year: 'numeric', month: 'short', day: '2-digit',
+const canonicalUrl = `${SITE}/blog/${post.slug}`;
+const formattedDate = new Date(pubDate).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
 });
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <SEO post={post} url={canonicalUrl} />
-  </head>
-  <body style="font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.65;">
-    <a href="/blog" style="text-decoration:none;">← All Posts</a>
+<Layout title={title} description={description}>
+  <SEO post={post} url={canonicalUrl} />
 
-    <header style="margin-top:1rem; margin-bottom:1rem;">
-      <h1 style="margin:0 0 .25rem 0;">{title}</h1>
-      <div style="color:#666;">
-        <time datetime={new Date(pubDate).toISOString()}>{formattedDate}</time>
-        {tags.length ? <span> · {tags.join(', ')}</span> : null}
-      </div>
-    </header>
+  <a href="/blog" class="text-blue-600 hover:underline mb-8 inline-block">
+    ← All Posts
+  </a>
 
-    {image && (
-      <img
-        src={image}
-        alt={title}
-        style="max-width:100%; border-radius:12px; margin:1rem 0;"
-      />
-    )}
+  <header class="mb-4">
+    <h1 class="text-4xl font-extrabold text-slate-900 mb-2">{title}</h1>
+    <div class="text-slate-500">
+      <time datetime={new Date(pubDate).toISOString()}>{formattedDate}</time>
+      {tags.length > 0 && <span class="mx-2">·</span>}
+      {tags.join(", ")}
+    </div>
+  </header>
 
-    <main>
-      <Content />
-    </main>
-  </body>
-</html>
+  {image && (
+    <img
+      src={image}
+      alt={title}
+      class="w-full rounded-lg my-8"
+      loading="lazy"
+    />
+  )}
+
+  <main class="prose prose-slate lg:prose-xl max-w-none">
+    <Content />
+  </main>
+</Layout>
